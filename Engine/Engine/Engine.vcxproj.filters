@@ -25,6 +25,21 @@
     <Filter Include="소스 파일\Shader">
       <UniqueIdentifier>{45dcb9ab-6157-4b98-b1f1-1982adbd0314}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\2. Graphics\2-1. Direct3D">
+      <UniqueIdentifier>{245cfa98-c30f-4b23-8b78-ee4285c68fa0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2. Graphics\2-2. Models">
+      <UniqueIdentifier>{4e8ccc78-ed56-4a90-a209-8415e7b5db95}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2. Graphics\2-3. Camera">
+      <UniqueIdentifier>{cdfa0182-5eda-41ed-9eb4-28803044583f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2. Graphics\2-4. Shaders">
+      <UniqueIdentifier>{47a839d6-3ca5-436e-aef9-82b88ba43a64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2. Graphics\2-5. Light">
+      <UniqueIdentifier>{7755f002-8aa0-4cfa-9505-f333e88dfc9f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -33,9 +48,6 @@
     <ClCompile Include="SystemClass.cpp">
       <Filter>소스 파일\1. Core</Filter>
     </ClCompile>
-    <ClCompile Include="d3dclass.cpp">
-      <Filter>소스 파일\2. Graphics</Filter>
-    </ClCompile>
     <ClCompile Include="GraphicsClass.cpp">
       <Filter>소스 파일\1. Core</Filter>
     </ClCompile>
@@ -43,21 +55,33 @@
       <Filter>소스 파일\1. Core</Filter>
     </ClCompile>
     <ClCompile Include="modelclass.cpp">
-      <Filter>소스 파일\2. Graphics</Filter>
+      <Filter>소스 파일\2. Graphics\2-2. Models</Filter>
     </ClCompile>
-    <ClCompile Include="colorshaderclass.cpp">
-      <Filter>소스 파일\2. Graphics</Filter>
+    <ClCompile Include="textureclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-2. Models</Filter>
+    </ClCompile>
+    <ClCompile Include="d3dclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-1. Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="cameraclass.cpp">
-      <Filter>소스 파일\2. Graphics</Filter>
+      <Filter>소스 파일\2. Graphics\2-3. Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="colorshaderclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="textureshaderclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="lightshaderclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClCompile>
+    <ClCompile Include="lightclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-5. Light</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
       <Filter>소스 파일\1. Core</Filter>
-    </ClInclude>
-    <ClInclude Include="d3dclass.h">
-      <Filter>소스 파일\2. Graphics</Filter>
     </ClInclude>
     <ClInclude Include="InputClass.h">
       <Filter>소스 파일\1. Core</Filter>
@@ -65,14 +89,29 @@
     <ClInclude Include="GraphicsClass.h">
       <Filter>소스 파일\1. Core</Filter>
     </ClInclude>
-    <ClInclude Include="modelclass.h">
-      <Filter>소스 파일\2. Graphics</Filter>
+    <ClInclude Include="textureclass.h">
+      <Filter>소스 파일\2. Graphics\2-2. Models</Filter>
     </ClInclude>
-    <ClInclude Include="colorshaderclass.h">
-      <Filter>소스 파일\2. Graphics</Filter>
+    <ClInclude Include="modelclass.h">
+      <Filter>소스 파일\2. Graphics\2-2. Models</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dclass.h">
+      <Filter>소스 파일\2. Graphics\2-1. Direct3D</Filter>
     </ClInclude>
     <ClInclude Include="cameraclass.h">
-      <Filter>소스 파일\2. Graphics</Filter>
+      <Filter>소스 파일\2. Graphics\2-3. Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="colorshaderclass.h">
+      <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="textureshaderclass.h">
+      <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="lightshaderclass.h">
+      <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="lightclass.h">
+      <Filter>소스 파일\2. Graphics\2-5. Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +119,18 @@
       <Filter>소스 파일\Shader</Filter>
     </None>
     <None Include="color.ps">
+      <Filter>소스 파일\Shader</Filter>
+    </None>
+    <None Include="texture.vs">
+      <Filter>소스 파일\Shader</Filter>
+    </None>
+    <None Include="texture.ps">
+      <Filter>소스 파일\Shader</Filter>
+    </None>
+    <None Include="light.vs">
+      <Filter>소스 파일\Shader</Filter>
+    </None>
+    <None Include="light.ps">
       <Filter>소스 파일\Shader</Filter>
     </None>
   </ItemGroup>

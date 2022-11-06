@@ -1,21 +1,34 @@
 #include "modelclass.h"
 
 ModelClass::ModelClass()
-{
-	m_vertexCount = m_indexCount = 0;
-}
+	: m_vertexCount(0)
+	, m_indexCount(0)
+	, m_Texture(0)
+{}
 
 ModelClass::ModelClass(const ModelClass& other) {}
 ModelClass::~ModelClass() {}
 
-bool ModelClass::Initialize(ID3D11Device* device)
+bool ModelClass::Initialize(ID3D11Device* device, WCHAR* texturePath)
 {
-	// 정점 버퍼와 인덱스 버퍼를 초기화합니다.
-	return InitializeBuffers(device);
+	bool result;
+	
+	// 정점 버퍼와 인덱스 버퍼를 초기화합니다
+	result = InitializeBuffers(device);
+	if (!result) return false;
+
+	// 텍스쳐를 불러옵니다.
+	result = LoadTexture(device, texturePath);
+	if (!result) return false;
+
+	return true;
 }
 
 void ModelClass::Shutdown()
 {
+	// 텍스쳐를 해제합니다.
+	ReleaseTexture();
+
 	// 정점 버퍼와 인덱스 버퍼를 해제합니다.
 	ShutdownBuffers();
 }
@@ -31,6 +44,11 @@ void ModelClass::Render(ID3D11DeviceContext* deviceContext)
 int ModelClass::GetIndexCount()
 {
 	return m_indexCount;
+}
+
+ID3D11ShaderResourceView* ModelClass::GetTexture()
+{
+	return m_Texture->GetTexture();
 }
 
 // 보통 데이터 파일로부터 모델의 정보를 읽어와서 버퍼를 만드는 일을 함.
@@ -56,34 +74,33 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	indices = new unsigned long[m_indexCount];
 	if (!indices) return false;
 
+	float alpha = 2.0f;
+
 	/* !주의! 정점은 항상 시계 방향으로 만들어야 함 */
 	// 정점 배열에 값을 넣습니다.
-	vertices[0].position = D3DXVECTOR3(-1.0f, -1.0f, 0.0f); // 왼쪽 아래
-	vertices[0].color = D3DXVECTOR4(1.0f, 0.0f, 0.0f, 1.0f);
+	vertices[0].position = D3DXVECTOR3(1.0f * alpha, 1.0f * alpha, 0.0f);	// 오른쪽 위
+	vertices[0].texture = D3DXVECTOR2(1.0f, 0.0f);
+	vertices[0].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
-	vertices[1].position = D3DXVECTOR3(-1.0f, 1.0f, 0.0f);	// 왼쪽 위
-	vertices[1].color = D3DXVECTOR4(0.0f, 1.0f, 0.0f, 1.0f);
+	vertices[1].position = D3DXVECTOR3(1.0f * alpha, -1.0f * alpha, 0.0f);	// 오른쪽 아래
+	vertices[1].texture = D3DXVECTOR2(1.0f, 1.0f);
+	vertices[1].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	
+	vertices[2].position = D3DXVECTOR3(-1.0f * alpha, -1.0f * alpha, 0.0f);	// 왼쪽 아래
+	vertices[2].texture = D3DXVECTOR2(0.0f, 1.0f);
+	vertices[2].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
-	vertices[2].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);	// 오른쪽 아래
-	vertices[2].color = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
-
-	// 2번째 삼각형
-	//vertices[3].position = D3DXVECTOR3(-1.0f, 1.0f, 0.0f);	// 왼쪽 위
-	//vertices[3].color = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
-
-	vertices[3].position = D3DXVECTOR3(1.0f, 1.0f, 0.0f);	// 오른쪽 위(New)
-	vertices[3].color = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	//vertices[5].position = D3DXVECTOR3(1.0f, -1.0f, 0.0f);	// 오른쪽 아래
-	//vertices[5].color = D3DXVECTOR4(0.0f, 0.0f, 1.0f, 1.0f);
+	vertices[3].position = D3DXVECTOR3(-1.0f * alpha, 1.0f * alpha, 0.0f);	// 왼쪽 위
+	vertices[3].texture = D3DXVECTOR2(0.0f, 0.0f);
+	vertices[3].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
 
 	// 인덱스 배열에 값을 넣습니다.
-	indices[0] = 0; // 왼쪽 아래
-	indices[1] = 1; // 왼쪽 위
-	indices[2] = 2; // 오른쪽 아래
-	indices[3] = 1; 
-	indices[4] = 3; 
-	indices[5] = 2; 
+	indices[0] = 1;
+	indices[1] = 2;
+	indices[2] = 3;
+	indices[3] = 0;
+	indices[4] = 1;
+	indices[5] = 3;
 
 	// 정점 버퍼에 정점의 위치, 색상을 저장해두고
 	// 인덱스 버퍼에서 그 정점의 인덱스를 저장해둔다.
@@ -168,4 +185,29 @@ void ModelClass::RenderBuffers(ID3D11DeviceContext* deviceContext)
 
 	// 정점 버퍼로 그릴 기본형을 설정합니다. 여기서는 삼각형입니다.
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+}
+
+bool ModelClass::LoadTexture(ID3D11Device* device, WCHAR* texturePath)
+{
+	bool result;
+
+	// 텍스쳐 객체 생성
+	m_Texture = new TextureClass();
+	if (!m_Texture) return false;
+
+	// 텍스쳐 객체 초기화
+	result = m_Texture->Initialize(device, texturePath);
+	if (!result) return false;
+
+	return true;
+}
+
+void ModelClass::ReleaseTexture()
+{
+	if (m_Texture)
+	{
+		m_Texture->Shutdown();
+		delete m_Texture;
+		m_Texture = 0;
+	}
 }
