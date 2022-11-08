@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+
+# sdf, ipch
+*.ipch
+*.sdf
