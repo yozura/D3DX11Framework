@@ -20,6 +20,7 @@ bool D3DClass::Initialize(int screenWidth, int screenHeight, bool vsync, HWND hW
 	HRESULT result;
 	IDXGIFactory* factory;
 	IDXGIAdapter* adapter;
+
 	IDXGIOutput* adapterOutput;
 	unsigned int numModes, i, numerator, denominator, stringLength;
 	DXGI_MODE_DESC* displayModeList;

@@ -7,6 +7,7 @@ LightShaderClass::LightShaderClass()
 	, m_sampleState(0)
 	, m_matrixBuffer(0)
 	, m_lightBuffer(0)
+	, m_cameraBuffer(0)
 {}
 
 LightShaderClass::LightShaderClass(const LightShaderClass& other) {}
@@ -28,12 +29,12 @@ void LightShaderClass::Shutdown()
 	ShutdownShader();	
 }
 
-bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX world, D3DXMATRIX view, D3DXMATRIX projection, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
+bool LightShaderClass::Render(ID3D11DeviceContext* deviceContext, int indexCount, D3DXMATRIX world, D3DXMATRIX view, D3DXMATRIX projection, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor, D3DXVECTOR3 cameraPos, D3DXVECTOR4 specularColor, float specularPower)
 {
 	bool result;
 
 	// 렌더링에 사용되는 쉐이더 파라미터를 설정합니다.
-	result = SetShaderParameters(deviceContext, world, view, projection, texture, lightDirection, diffuseColor);
+	result = SetShaderParameters(deviceContext, world, view, projection, texture, lightDirection, diffuseColor, ambientColor, cameraPos, specularColor, specularPower);
 	if (!result) return false;
 
 	// 준비된 버퍼와 쉐이더를 렌더링합니다.
@@ -52,6 +53,7 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hWnd, WCHAR* 
 	D3D11_SAMPLER_DESC samplerDesc;
 	D3D11_BUFFER_DESC matrixBufferDesc;
 	D3D11_BUFFER_DESC lightBufferDesc;
+	D3D11_BUFFER_DESC cameraBufferDesc;
 
 	// 포인터 초기화
 	errorMessage = vertexShaderBuffer = pixelShaderBuffer = 0;
@@ -162,11 +164,28 @@ bool LightShaderClass::InitializeShader(ID3D11Device* device, HWND hWnd, WCHAR* 
 	result = device->CreateBuffer(&lightBufferDesc, NULL, &m_lightBuffer);
 	if (FAILED(result)) return false;
 
+	// 카메라 상수 버퍼 description을 작성합니다.
+	cameraBufferDesc.Usage = D3D11_USAGE_DYNAMIC;
+	cameraBufferDesc.ByteWidth = sizeof(CameraBufferType);
+	cameraBufferDesc.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
+	cameraBufferDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	cameraBufferDesc.MiscFlags = 0;
+	cameraBufferDesc.StructureByteStride = 0;
+
+	result = device->CreateBuffer(&cameraBufferDesc, NULL, &m_cameraBuffer);
+	if (FAILED(result)) return false;
+
 	return true; 
 }
 
 void LightShaderClass::ShutdownShader()
-{
+{	
+	if (m_cameraBuffer)
+	{
+		m_cameraBuffer->Release();
+		m_cameraBuffer = 0;
+	}
+
 	if (m_lightBuffer)
 	{
 		m_lightBuffer->Release();
@@ -224,13 +243,14 @@ void LightShaderClass::OutputShaderErrorMessage(ID3D10Blob* errorMessage, HWND h
 	MessageBox(hWnd, L"Error compiling shader. Check shader-error.txt for message", path, MB_OK);
 }
 
-bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX world, D3DXMATRIX view, D3DXMATRIX projection, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor)
+bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D3DXMATRIX world, D3DXMATRIX view, D3DXMATRIX projection, ID3D11ShaderResourceView* texture, D3DXVECTOR3 lightDirection, D3DXVECTOR4 diffuseColor, D3DXVECTOR4 ambientColor, D3DXVECTOR3 cameraPos, D3DXVECTOR4 specularColor, float specularPower)
 {
 	HRESULT result;
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	unsigned int bufferNumber;
 	MatrixBufferType* matrixPtr;
 	LightBufferType* lightPtr;
+	CameraBufferType* cameraPtr;
 
 	D3DXMatrixTranspose(&world, &world);
 	D3DXMatrixTranspose(&view, &view);
@@ -251,13 +271,28 @@ bool LightShaderClass::SetShaderParameters(ID3D11DeviceContext* deviceContext, D
 	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 	deviceContext->PSSetShaderResources(0, 1, &texture);
 
+	result = deviceContext->Map(m_cameraBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+	if (FAILED(result)) return false;
+
+	cameraPtr = (CameraBufferType*)mappedResource.pData;
+	cameraPtr->cameraPosition = cameraPos;
+	cameraPtr->padding = 0.0f;
+
+	deviceContext->Unmap(m_cameraBuffer, 0);
+
+	bufferNumber = 1;
+
+	deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_cameraBuffer);
+
 	result = deviceContext->Map(m_lightBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
 	if (FAILED(result)) return false;
 
 	lightPtr = (LightBufferType*)mappedResource.pData;
+	lightPtr->ambientColor = ambientColor;
 	lightPtr->diffuseColor = diffuseColor;
 	lightPtr->lightDirection = lightDirection;
-	lightPtr->padding = 0.0f;
+	lightPtr->specularPower = specularPower;
+	lightPtr->specularColor = specularColor;
 
 	deviceContext->Unmap(m_lightBuffer, 0);
 

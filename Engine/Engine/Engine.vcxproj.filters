@@ -31,14 +31,14 @@
     <Filter Include="소스 파일\2. Graphics\2-2. Models">
       <UniqueIdentifier>{4e8ccc78-ed56-4a90-a209-8415e7b5db95}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\2. Graphics\2-3. Camera">
-      <UniqueIdentifier>{cdfa0182-5eda-41ed-9eb4-28803044583f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="소스 파일\2. Graphics\2-4. Shaders">
       <UniqueIdentifier>{47a839d6-3ca5-436e-aef9-82b88ba43a64}</UniqueIdentifier>
     </Filter>
     <Filter Include="소스 파일\2. Graphics\2-5. Light">
       <UniqueIdentifier>{7755f002-8aa0-4cfa-9505-f333e88dfc9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="소스 파일\2. Graphics\2-3. Camera">
+      <UniqueIdentifier>{cdfa0182-5eda-41ed-9eb4-28803044583f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

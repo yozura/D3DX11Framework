@@ -9,10 +9,14 @@ ModelClass::ModelClass()
 ModelClass::ModelClass(const ModelClass& other) {}
 ModelClass::~ModelClass() {}
 
-bool ModelClass::Initialize(ID3D11Device* device, WCHAR* texturePath)
+bool ModelClass::Initialize(ID3D11Device* device, char* modelPath, WCHAR* texturePath)
 {
 	bool result;
 	
+	// 모델을 불러옵니다.
+	result = LoadModel(modelPath);
+	if (!result) return false;
+
 	// 정점 버퍼와 인덱스 버퍼를 초기화합니다
 	result = InitializeBuffers(device);
 	if (!result) return false;
@@ -31,6 +35,9 @@ void ModelClass::Shutdown()
 
 	// 정점 버퍼와 인덱스 버퍼를 해제합니다.
 	ShutdownBuffers();
+
+	// 모델 파일을 해제합니다.
+	ReleaseModel();
 }
 
 void ModelClass::Render(ID3D11DeviceContext* deviceContext)
@@ -59,12 +66,13 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
 	D3D11_SUBRESOURCE_DATA vertexData, indexData;
 	HRESULT result;
+	int i;
 
 	// 정점 배열의 길이를 설정합니다.
-	m_vertexCount = 4;
+	//m_vertexCount = 4;
 
 	// 인덱스 배열의 길이를 설정합니다.
-	m_indexCount = 6;
+	//m_indexCount = 6;
 
 	// 정점 배열을 생성합니다.
 	vertices = new VertexType[m_vertexCount];
@@ -74,37 +82,46 @@ bool ModelClass::InitializeBuffers(ID3D11Device* device)
 	indices = new unsigned long[m_indexCount];
 	if (!indices) return false;
 
-	float alpha = 2.0f;
-
-	/* !주의! 정점은 항상 시계 방향으로 만들어야 함 */
-	// 정점 배열에 값을 넣습니다.
-	vertices[0].position = D3DXVECTOR3(1.0f * alpha, 1.0f * alpha, 0.0f);	// 오른쪽 위
-	vertices[0].texture = D3DXVECTOR2(1.0f, 0.0f);
-	vertices[0].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-
-	vertices[1].position = D3DXVECTOR3(1.0f * alpha, -1.0f * alpha, 0.0f);	// 오른쪽 아래
-	vertices[1].texture = D3DXVECTOR2(1.0f, 1.0f);
-	vertices[1].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	// float alpha = 2.0f;
 	
-	vertices[2].position = D3DXVECTOR3(-1.0f * alpha, -1.0f * alpha, 0.0f);	// 왼쪽 아래
-	vertices[2].texture = D3DXVECTOR2(0.0f, 1.0f);
-	vertices[2].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-
-	vertices[3].position = D3DXVECTOR3(-1.0f * alpha, 1.0f * alpha, 0.0f);	// 왼쪽 위
-	vertices[3].texture = D3DXVECTOR2(0.0f, 0.0f);
-	vertices[3].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
-
-	// 인덱스 배열에 값을 넣습니다.
-	indices[0] = 1;
-	indices[1] = 2;
-	indices[2] = 3;
-	indices[3] = 0;
-	indices[4] = 1;
-	indices[5] = 3;
-
 	// 정점 버퍼에 정점의 위치, 색상을 저장해두고
 	// 인덱스 버퍼에서 그 정점의 인덱스를 저장해둔다.
 	// 인덱스 버퍼는 0에서부터 세 개씩 읽기 때문에 시계 방향으로 세 개씩 삼각형의 정점을 만들어야 한다.
+
+	/* !주의! 정점은 항상 시계 방향으로 만들어야 함 */
+	// 정점 배열에 값을 넣습니다.
+	//vertices[0].position = D3DXVECTOR3(1.0f * alpha, 1.0f * alpha, 0.0f);	// 오른쪽 위
+	//vertices[0].texture = D3DXVECTOR2(1.0f, 0.0f);
+	//vertices[0].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+
+	//vertices[1].position = D3DXVECTOR3(1.0f * alpha, -1.0f * alpha, 0.0f);	// 오른쪽 아래
+	//vertices[1].texture = D3DXVECTOR2(1.0f, 1.0f);
+	//vertices[1].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+	//
+	//vertices[2].position = D3DXVECTOR3(-1.0f * alpha, -1.0f * alpha, 0.0f);	// 왼쪽 아래
+	//vertices[2].texture = D3DXVECTOR2(0.0f, 1.0f);
+	//vertices[2].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+
+	//vertices[3].position = D3DXVECTOR3(-1.0f * alpha, 1.0f * alpha, 0.0f);	// 왼쪽 위
+	//vertices[3].texture = D3DXVECTOR2(0.0f, 0.0f);
+	//vertices[3].normal = D3DXVECTOR3(0.0f, 0.0f, -1.0f);
+
+	//// 인덱스 배열에 값을 넣습니다.
+	//indices[0] = 1;
+	//indices[1] = 2;
+	//indices[2] = 3;
+	//indices[3] = 0;
+	//indices[4] = 1;
+	//indices[5] = 3;
+
+	for (i = 0; i < m_vertexCount; ++i)
+	{
+		vertices[i].position = D3DXVECTOR3(m_model[i].x, m_model[i].y, m_model[i].z);
+		vertices[i].texture = D3DXVECTOR2(m_model[i].tu, m_model[i].tv);
+		vertices[i].normal = D3DXVECTOR3(m_model[i].nx, m_model[i].ny, m_model[i].nz);
+
+		indices[i] = i;
+	}
 
 	// 정점 버퍼의 description을 작성합니다.
 	vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -209,5 +226,47 @@ void ModelClass::ReleaseTexture()
 		m_Texture->Shutdown();
 		delete m_Texture;
 		m_Texture = 0;
+	}
+}
+
+bool ModelClass::LoadModel(char* modelPath)
+{
+	ifstream fin;
+	char input;
+	int i;
+
+	fin.open(modelPath);
+
+	fin.get(input);
+	while (input != ':')
+		fin.get(input);
+
+	fin >> m_vertexCount;
+	m_indexCount = m_vertexCount;
+
+	m_model = new ModelType[m_vertexCount];
+	if (!m_model) return false;
+
+	fin.get(input);
+	while (input != ':')
+		fin.get(input);
+	
+	for (i = 0; i < m_vertexCount; ++i) 
+	{
+		fin >> m_model[i].x >> m_model[i].y >> m_model[i].z;
+		fin >> m_model[i].tu >> m_model[i].tv;
+		fin >> m_model[i].nx >> m_model[i].ny >> m_model[i].nz;
+	}
+
+	fin.close();
+	return true;
+}
+
+void ModelClass::ReleaseModel()
+{
+	if (m_model)
+	{
+		delete[] m_model;
+		m_model = 0;
 	}
 }

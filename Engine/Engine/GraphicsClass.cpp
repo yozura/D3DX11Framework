@@ -34,14 +34,14 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hWnd)
 	if (!m_Camera) return false;
 
 	// 카메라 객체 위치 초기화
-	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
+	m_Camera->SetPosition(0.0f, 0.0f, -5.0f);
 
 	// 모델 객체 생성
 	m_Model = new ModelClass;
 	if (!m_Model) return false;
 
 	// 모델 객체 초기화
-	result = m_Model->Initialize(m_D3D->GetDevice(), L"../Engine/data/seafloor.dds");
+	result = m_Model->Initialize(m_D3D->GetDevice(), "../Engine/data/cube.txt", L"../Engine/data/arial.dds");
 	if (!result) 
 	{
 		MessageBox(hWnd, L"Could not Initialize Model object", L"Error", MB_OK);
@@ -65,8 +65,11 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hWnd)
 	if (!m_Light) return false;
 
 	// 조명 객체 초기화
+	m_Light->SetAmbientColor(0.1f, 0.1f, 0.1f, 0.1f);
 	m_Light->SetDiffuseColor(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Light->SetDirection(0.0f, 0.0f, 1.0f);
+	m_Light->SetSpecularColor(1.0f, 1.0f, 1.0f, 1.0f);
+	m_Light->SetSpecularPower(15.0f); // 값이 낮을 수록 반사 효과가 커짐
 
 	//// 컬러 쉐이더 객체 생성
 	//m_ColorShader = new ColorShaderClass;
@@ -159,7 +162,7 @@ bool GraphicsClass::Frame()
 	static float rotation = 0.0f;
 
 	// 매 프레임마다 회전값 변경
-	rotation += (float)D3DX_PI * 0.01f;
+	rotation += (float)D3DX_PI * 0.001f;
 	if (rotation > 360.0f)
 	{
 		rotation -= 360.0f;
@@ -208,7 +211,7 @@ bool GraphicsClass::Render(float rotation)
 	if (!result) return false;*/
 
 	// 조명 쉐이더를 이용해 모델 그리기
-	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor());
+	result = m_LightShader->Render(m_D3D->GetDeviceContext(), m_Model->GetIndexCount(), worldMatrix, viewMatrix, projectionMatrix, m_Model->GetTexture(), m_Light->GetDirection(), m_Light->GetDiffuseColor(), m_Light->GetAmbientColor(), m_Camera->GetPosition(), m_Light->GetSpecularColor(), m_Light->GetSpecularPower());
 	if (!result) return false;
 
 	// 버퍼에 그려진 씬을 화면에 표시합니다.
