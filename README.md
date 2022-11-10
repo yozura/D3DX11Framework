@@ -1,5 +1,6 @@
 # D3DX11Framework
 
+--[학습 최종 목적](/Diary/final_purpose.md)
 [오른손 좌표계에서 왼손 좌표계로 변환하기](/Diary/right_to_left.md)
 
 # references
