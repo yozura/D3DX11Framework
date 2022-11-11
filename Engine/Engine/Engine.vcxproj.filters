@@ -40,6 +40,9 @@
     <Filter Include="소스 파일\2. Graphics\2-3. Camera">
       <UniqueIdentifier>{cdfa0182-5eda-41ed-9eb4-28803044583f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\2. Graphics\2-6. Bitmap">
+      <UniqueIdentifier>{2a59b41f-879b-4a41-80d5-dd65fa27e27a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -78,6 +81,9 @@
     <ClCompile Include="lightclass.cpp">
       <Filter>소스 파일\2. Graphics\2-5. Light</Filter>
     </ClCompile>
+    <ClCompile Include="bitmapclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-6. Bitmap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -112,6 +118,9 @@
     </ClInclude>
     <ClInclude Include="lightclass.h">
       <Filter>소스 파일\2. Graphics\2-5. Light</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmapclass.h">
+      <Filter>소스 파일\2. Graphics\2-6. Bitmap</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
