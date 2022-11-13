@@ -43,6 +43,9 @@
     <Filter Include="소스 파일\2. Graphics\2-6. Bitmap">
       <UniqueIdentifier>{2a59b41f-879b-4a41-80d5-dd65fa27e27a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\2. Graphics\2-7. Text">
+      <UniqueIdentifier>{4d5954d0-31c6-447f-b124-40bf82ef94b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -84,6 +87,15 @@
     <ClCompile Include="bitmapclass.cpp">
       <Filter>소스 파일\2. Graphics\2-6. Bitmap</Filter>
     </ClCompile>
+    <ClCompile Include="textclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-7. Text</Filter>
+    </ClCompile>
+    <ClCompile Include="fontclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-7. Text</Filter>
+    </ClCompile>
+    <ClCompile Include="fontshaderclass.cpp">
+      <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -122,6 +134,15 @@
     <ClInclude Include="bitmapclass.h">
       <Filter>소스 파일\2. Graphics\2-6. Bitmap</Filter>
     </ClInclude>
+    <ClInclude Include="textclass.h">
+      <Filter>소스 파일\2. Graphics\2-7. Text</Filter>
+    </ClInclude>
+    <ClInclude Include="fontclass.h">
+      <Filter>소스 파일\2. Graphics\2-7. Text</Filter>
+    </ClInclude>
+    <ClInclude Include="fontshaderclass.h">
+      <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="color.vs">
@@ -140,6 +161,12 @@
       <Filter>소스 파일\Shader</Filter>
     </None>
     <None Include="light.ps">
+      <Filter>소스 파일\Shader</Filter>
+    </None>
+    <None Include="font.vs">
+      <Filter>소스 파일\Shader</Filter>
+    </None>
+    <None Include="font.ps">
       <Filter>소스 파일\Shader</Filter>
     </None>
   </ItemGroup>
