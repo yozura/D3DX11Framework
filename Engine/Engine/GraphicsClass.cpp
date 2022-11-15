@@ -6,6 +6,8 @@ GraphicsClass::GraphicsClass()
 	: m_D3D(0)
 	, m_Camera(0)
 	, m_Text(0)
+	, m_Bitmap(0)
+	, m_TextureShader(0)
 {}
 
 GraphicsClass::GraphicsClass(const GraphicsClass&) {}
@@ -95,28 +97,28 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hWnd)
 	//}
 
 	// 텍스쳐 쉐이더 객체 생성
-	//m_TextureShader = new TextureShaderClass;
-	//if (!m_TextureShader) return false;
+	m_TextureShader = new TextureShaderClass;
+	if (!m_TextureShader) return false;
 
-	//// 텍스쳐 쉐이더 객체 초기화
-	//result = m_TextureShader->Initialize(m_D3D->GetDevice(), hWnd);
-	//if (!result)
-	//{
-	//	MessageBox(hWnd, L"Could not Initialize TextureShader Object", L"Error", MB_OK);
-	//	return false;
-	//}
+	// 텍스쳐 쉐이더 객체 초기화
+	result = m_TextureShader->Initialize(m_D3D->GetDevice(), hWnd);
+	if (!result)
+	{
+		MessageBox(hWnd, L"Could not Initialize TextureShader Object", L"Error", MB_OK);
+		return false;
+	}
 
-	//// 비트맵 객체 생성
-	//m_Bitmap = new BitmapClass;
-	//if (!m_Bitmap) return false;
+	// 비트맵 객체 생성
+	m_Bitmap = new BitmapClass;
+	if (!m_Bitmap) return false;
 
-	//// 비트맵 객체 초기화
-	//result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/arial.dds", 256, 256);
-	//if (!result) 
-	//{
-	//	MessageBox(hWnd, L"Could not Initialize Bitmap Object", L"Error", MB_OK);
-	//	return false;
-	//}
+	// 비트맵 객체 초기화
+	result = m_Bitmap->Initialize(m_D3D->GetDevice(), screenWidth, screenHeight, L"../Engine/data/mycursor.dds", 32, 32);
+	if (!result) 
+	{
+		MessageBox(hWnd, L"Could not Initialize Bitmap Object", L"Error", MB_OK);
+		return false;
+	}
 
 	return true;
 }
@@ -163,20 +165,20 @@ void GraphicsClass::Shotdown()
 	//}
 
 	// 비트맵 객체 반환한다.
-	//if (m_Bitmap)
-	//{
-	//	m_Bitmap->Shutdown();
-	//	delete m_Bitmap;
-	//	m_Bitmap = 0;
-	//}
+	if (m_Bitmap)
+	{
+		m_Bitmap->Shutdown();
+		delete m_Bitmap;
+		m_Bitmap = 0;
+	}
 
 	//// 텍스쳐 쉐이더 객체 반환한다.
-	//if (m_TextureShader)
-	//{
-	//	m_TextureShader->Shutdown();
-	//	delete m_TextureShader;
-	//	m_TextureShader = 0;
-	//}
+	if (m_TextureShader)
+	{
+		m_TextureShader->Shutdown();
+		delete m_TextureShader;
+		m_TextureShader = 0;
+	}
 
 	if (m_Text)
 	{
@@ -202,30 +204,19 @@ void GraphicsClass::Shotdown()
 }
 
 
-bool GraphicsClass::Frame()
+bool GraphicsClass::Frame(int mouseX, int mouseY)
 {
 	bool result;
-	static float rotation = 0.0f;
 
-	// 매 프레임마다 회전값 변경
-	rotation += (float)D3DX_PI * 0.001f;
-	if (rotation > 360.0f)
-	{
-		rotation -= 360.0f;
-	}
+	result = m_Text->SetMousePosition(mouseX, mouseY, m_D3D->GetDeviceContext());
+	if (!result) return false;
 
-	// 그래픽 렌더링을 수행
-	result = Render(rotation);
-	if (!result)
-	{
-		return false;
-	}
-
+	m_Camera->SetPosition(0.0f, 0.0f, -10.0f);
 	return true;
 }
 
 
-bool GraphicsClass::Render(float rotation)
+bool GraphicsClass::Render()
 {
 	D3DXMATRIX worldMatrix, viewMatrix, projectionMatrix, orthoMatrix;
 	bool result;
@@ -247,11 +238,11 @@ bool GraphicsClass::Render(float rotation)
 	m_D3D->TurnOnAlphaBlending();
 
 	// 화면의 100, 100 좌표에 비트맵을 그립니다. 위치는 임의 변경 가능합니다.
-	/*result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
+	result = m_Bitmap->Render(m_D3D->GetDeviceContext(), 0, 0);
 	if (!result) return false;
 
 	result = m_TextureShader->Render(m_D3D->GetDeviceContext(), m_Bitmap->GetIndexCount(), worldMatrix, viewMatrix, orthoMatrix, m_Bitmap->GetTexture());
-	if (!result) return false;*/
+	if (!result) return false;
 	
 	result = m_Text->Render(m_D3D->GetDeviceContext(), worldMatrix, orthoMatrix);
 	if (!result) return false;

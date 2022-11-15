@@ -57,6 +57,8 @@ bool FontClass::LoadFontData(char* path)
 		fin >> m_Font[i].left;
 		fin >> m_Font[i].right;
 		fin >> m_Font[i].size;
+		m_Font[i].left *= 1.712374581939799f;
+		m_Font[i].right *= 1.712374581939799f;
 	}
 
 	fin.close();

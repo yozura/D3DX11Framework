@@ -4,6 +4,8 @@
 #include "d3dclass.h"
 #include "cameraclass.h"
 #include "textclass.h"
+#include "bitmapclass.h"
+#include "textureshaderclass.h"
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -19,15 +21,15 @@ public:
 
 	bool Initialize(int, int, HWND);
 	void Shotdown();
-	bool Frame();
-
-private:
-	bool Render(float);
+	bool Frame(int, int);
+	bool Render();
 
 private:
 	D3DClass* m_D3D;
 	CameraClass* m_Camera;
 	TextClass* m_Text;
+	BitmapClass* m_Bitmap;
+	TextureShaderClass* m_TextureShader;
 };
 
 #endif 

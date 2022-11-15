@@ -143,7 +143,7 @@ bool BitmapClass::UpdateBuffers(ID3D11DeviceContext* deviceContext, int posX, in
 	D3D11_MAPPED_SUBRESOURCE mappedResource;
 	VertexType* verticesPtr;
 	HRESULT result;
-
+	
 	// 이전에 그린 위치와 현재 위치가 같다면 업데이트 할 필요없이 넘어감.
 	if ((posX == m_prevPosX) && (posY == m_prevPosY)) return true;
 

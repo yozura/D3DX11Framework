@@ -5,6 +5,7 @@ TextClass::TextClass()
 	, m_FontShader(0)
 	, m_sentence1(0)
 	, m_sentence2(0)
+	, m_sentence3(0)
 {}
 
 TextClass::TextClass(const TextClass& other) {}
@@ -41,14 +42,8 @@ bool TextClass::Initialize(ID3D11Device* device, ID3D11DeviceContext* deviceCont
 
 	result = InitializeSentence(&m_sentence1, 16, device);
 	if (!result) return false;
-
-	result = UpdateSentence(m_sentence1, "Hello", 100, 100, 1.0f, 1.0f, 1.0f, deviceContext);
-	if (!result) return false;
-
+	
 	result = InitializeSentence(&m_sentence2, 16, device);
-	if (!result) return false;
-
-	result = UpdateSentence(m_sentence2, "GoodBye", 100, 200, 1.0f, 1.0f, 0.0f, deviceContext);
 	if (!result) return false;
 
 	return true;
@@ -82,6 +77,35 @@ bool TextClass::Render(ID3D11DeviceContext* deviceContext, D3DXMATRIX worldMatri
 	if (!result) return false;
 
 	result = RenderSentence(deviceContext, m_sentence2, worldMatrix, orthoMatrix);
+	if (!result) return false;
+
+	return true;
+}
+
+bool TextClass::SetMousePosition(int mouseX, int mouseY, ID3D11DeviceContext* deviceContext)
+{
+	char tempString[16];
+	char mouseString[16];
+	bool result;
+
+	// 숫자에서 문자열로 변환합니다.
+	_itoa_s(mouseX, tempString, 10);
+
+	// 문자열을 설정합니다.
+	strcpy_s(mouseString, "Mouse X : ");
+	strcat_s(mouseString, tempString);
+
+	result = UpdateSentence(m_sentence1, mouseString, 10, 20, 1.0f, 1.0f, 1.0f, deviceContext);
+	if (!result) return false;
+
+	// 숫자에서 문자열로 변환합니다.
+	_itoa_s(mouseY, tempString, 10);
+
+	// 문자열을 설정합니다.
+	strcpy_s(mouseString, "Mouse Y : ");
+	strcat_s(mouseString, tempString);
+
+	result = UpdateSentence(m_sentence2, mouseString, 10, 40, 1.0f, 1.0f, 1.0f, deviceContext);
 	if (!result) return false;
 
 	return true;

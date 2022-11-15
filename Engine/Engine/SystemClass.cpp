@@ -4,6 +4,7 @@ SystemClass::SystemClass()
 {
 	m_Input = 0;
 	m_Graphics = 0;
+	m_Sound = 0;
 }
 
 SystemClass::SystemClass(const SystemClass&) {}
@@ -25,7 +26,12 @@ bool SystemClass::Initialize()
 	if (!m_Input) return false;
 
 	// Input 객체 초기화
-	m_Input->Initialize();
+	result = m_Input->Initialize(m_hInstance, m_hWnd, screenWidth, screenHeight);
+	if (!result) 
+	{
+		MessageBox(m_hWnd, L"Could not initialize input object", L"Error", MB_OK);
+		return false;
+	}
 
 	// Graphics 객체 생성
 	m_Graphics = new GraphicsClass;
@@ -35,11 +41,29 @@ bool SystemClass::Initialize()
 	result = m_Graphics->Initialize(screenWidth, screenHeight, m_hWnd);
 	if (!result) return false;
 
+	m_Sound = new SoundClass;
+	if (!m_Sound) return false;
+
+	result = m_Sound->Initialize(m_hWnd);
+	if (!result)
+	{
+		MessageBox(m_hWnd, L"Could not initialize sound object", L"Error", MB_OK);
+		return false;
+	}
+
 	return true;
 }
 
 void SystemClass::Shutdown()
 {
+	// Sound 객체 반환
+	if (m_Sound)
+	{
+		m_Sound->Shutdown();
+		delete m_Sound;
+		m_Sound = 0;
+	}
+
 	// Graphics 객체 반환
 	if (m_Graphics)
 	{
@@ -51,6 +75,7 @@ void SystemClass::Shutdown()
 	// Input 객체 반환
 	if (m_Input)
 	{
+		m_Input->Shutdown();
 		delete m_Input;
 		m_Input = 0;
 	}
@@ -91,8 +116,14 @@ void SystemClass::Run()
 			result = Frame();
 			if (!result) 
 			{
+				MessageBox(m_hWnd, L"Frame Processing Failed", L"Error", MB_OK);
 				done = true;
 			}
+		}
+
+		if (m_Input->IsEscapePressed() == true)
+		{
+			done = true;
 		}
 	}
 }
@@ -100,12 +131,18 @@ void SystemClass::Run()
 bool SystemClass::Frame()
 {
 	bool result;
+	int mouseX, mouseY;
 
-	// 유저가 ESC키를 눌러 어플리케이션을 종료하기를 바라는지 확인한다.
-	if (m_Input->IsKeyDown(VK_ESCAPE)) return false;
+	result = m_Input->Frame();
+	if (!result) return false;
+
+	m_Input->GetMouseLocation(mouseX, mouseY);
 
 	// Graphics 객체의 작업을 처리한다.
-	result = m_Graphics->Frame();
+	result = m_Graphics->Frame(mouseX, mouseY);
+	if (!result) return false;
+
+	result = m_Graphics->Render();
 	if (!result) return false;
 
 	return true;
@@ -113,18 +150,6 @@ bool SystemClass::Frame()
 
 LRESULT CALLBACK SystemClass::MessageHandler(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-	switch (uMsg)
-	{
-	// 키보드가 키가 눌렸는지 확인한다.
-	case WM_KEYDOWN:
-		m_Input->KeyDown((unsigned int)wParam);
-		return 0;
-	// 키보드의 눌린 키가 떼어졌는지 확인한다.
-	case WM_KEYUP:
-		m_Input->KeyUp((unsigned int)wParam);
-		return 0;
-	}
-
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 

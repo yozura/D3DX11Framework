@@ -96,6 +96,9 @@
     <ClCompile Include="fontshaderclass.cpp">
       <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="SoundClass.cpp">
+      <Filter>소스 파일\1. Core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="SystemClass.h">
@@ -142,6 +145,9 @@
     </ClInclude>
     <ClInclude Include="fontshaderclass.h">
       <Filter>소스 파일\2. Graphics\2-4. Shaders</Filter>
+    </ClInclude>
+    <ClInclude Include="SoundClass.h">
+      <Filter>소스 파일\1. Core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
